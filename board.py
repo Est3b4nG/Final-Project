@@ -1,9 +1,7 @@
-"""
-Created by (Esteban Gómez) in  ${2022}
-"""
 import pyxel
 import random
 from player import Player
+from player import Bullets
 from enemies import Enemy1
 from background import Clouds
 
@@ -29,6 +27,7 @@ class Board:
         # This are the values that the player class will take
         self.player = Player(self.width / 2, self.height - 30 ,3)
 
+        self.bullets= Bullets(self.player.x, self.player.y)
         appearence_of_cloud= random.randint(0, self.width)
         self.clouds= Clouds(appearence_of_cloud, -50)
 
@@ -48,28 +47,23 @@ class Board:
     def update(self):
         """This function  is executed at every frame, it makes the program
         work at every point"""
+        if pyxel.btnp(pyxel.KEY_Q):
+                pyxel.quit()        #To quit the game
         if self.scene == 1:
-            if pyxel.btnp(pyxel.KEY_Q):
-                pyxel.quit()
             if pyxel.btnp(pyxel.KEY_SPACE):
                 self.scene=2
         if self.scene == 2:
-            if pyxel.btnp(pyxel.KEY_Q):     #to quit the game
-                pyxel.quit()
             if pyxel.btnp(pyxel.KEY_L):    #If the person press space, the game starts
                 self.start_game=True           #Makes the game start
             if self.start_game==True:
-                if pyxel.btn(pyxel.KEY_RIGHT):
-                    self.player.move("right", self.width)       #Direction, maximum range in width or height
-                if pyxel.btn(pyxel.KEY_LEFT):
-                    self.player.move("left",self.width)
-                if pyxel.btn(pyxel.KEY_UP):
-                    self.player.move("up",self.height)
-                if pyxel.btn(pyxel.KEY_DOWN):
-                    self.player.move("down",self.height)
+                self.player.update(self.width, self.height)
+                if pyxel.btn(pyxel.KEY_K):
+                    self.bullets.move(True,self.height)
 
                 if self.player.lives > 0: #If the player have more than 0 lives, it will make the enemies 1 move
-                   self.clouds.move(self.width, self.height, -100)
+
+                   self.clouds.update(self.width, self.height, -100)
+
                    for enemy in self.list_enemy1:       #Moves each enemy1
                         enemy.move(self.height, -8)    # the height of the screen, the place of appearence
 
@@ -102,9 +96,9 @@ class Board:
       #  pyxel.text(10, 10, self.highest_puntuation, 3)                                                   in the main
             pyxel.text(10, self.height-10, "Lives:", 0)    #The number of lives
 
-            pyxel.blt(self.clouds.position_x, self.clouds.position_y, *self.clouds.image )
+            self.clouds.draw()
 
-            pyxel.blt(self.player.x, self.player.y, *self.player.image)   #prints the image of the player
+            self.player.draw()
 
             for enemy in self.list_enemy1:              #prints everu enemy1 that we stored in the enemy1 list
                 pyxel.blt(enemy.x,enemy.y, *enemy.image)    #positionx, positiony, (way of saying that it need to
@@ -114,8 +108,3 @@ class Board:
             """This draws the message of Game Over"""
             pyxel.cls(0)
             pyxel.text(self.width / 2 -13, self.height / 2 + 10, "Game Over", pyxel.frame_count % 10)
-
-
-
-
-
