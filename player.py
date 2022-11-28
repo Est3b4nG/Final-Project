@@ -1,6 +1,4 @@
-"""
-Created by (Esteban Gómez) in  ${2022}
-"""
+import pyxel
 
 class Player:
     """This class will store all the functions related to the player"""
@@ -44,5 +42,17 @@ class Player:
             self.y = self.y + 4
 
 
+class Bullets:
+    """These are the bullets of the player"""
+    def __init__(self, position_x, position_y):
+        self.position_x=position_x
+        self.position_y = position_y
 
+        self.image=(0, 16, 0, 1, 5, 5)
 
+    def move(self, shot, range):
+        if shot==True and range>0:
+            self.position_y += 10
+
+    def draw(self):
+        pyxel.blt(self.position_x, self.position_y, *self.image)
