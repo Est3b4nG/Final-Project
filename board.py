@@ -1,3 +1,6 @@
+"""
+Created by (Esteban Gómez) in  ${2022}
+"""
 import pyxel
 import random
 from player import Player
@@ -10,12 +13,14 @@ class Board:
     """This class contains all the functions related to the functioning of
     the program"""
 
-    def __init__(self, width, height, scene):
+    def __init__(self, width, height, scene, highest_puntuation):
         """The parameters are the width and height of the screen"""
         self.width=width    #screen width
         self.height=height  #screen height
         self.scene=scene  #Which screen it will show, the main screen or the game screen
         self.start_game=False
+        self.puntuation= 0
+        self.highest_puntuation=highest_puntuation
 
         #This initialize pyxel
         pyxel.init(self.width, self.height, title="1942")
@@ -27,9 +32,9 @@ class Board:
         # This are the values that the player class will take
         self.player = Player(self.width / 2, self.height - 30 ,3)
 
-        self.bullets= Bullets(self.player.x, self.player.y)
-        appearence_of_cloud= random.randint(0, self.width)
-        self.clouds= Clouds(appearence_of_cloud, -50)
+        #self.bullets= Bullets(self.player.x, self.player.y)
+
+        self.clouds= Clouds(0, -50)
 
         #Create the enemies 1, we are doing a list of these enemies, because we can have more than one at a time
         self.list_enemy1= []
@@ -57,22 +62,29 @@ class Board:
                 self.start_game=True           #Makes the game start
             if self.start_game==True:
                 self.player.update(self.width, self.height)
+
                 if pyxel.btn(pyxel.KEY_K):
-                    self.bullets.move(True,self.height)
+                    self.bullets = Bullets(self.player.x, self.player.y)
+                    self.bullets.update()
+
 
                 if self.player.lives > 0: #If the player have more than 0 lives, it will make the enemies 1 move
 
                    self.clouds.update(self.width, self.height, -100)
 
                    for enemy in self.list_enemy1:       #Moves each enemy1
-                        enemy.move(self.height, -8)    # the height of the screen, the place of appearence
+                        enemy.update(self.width,self.height, -8)    # the height of the screen, the place of appearence
+                        if enemy.x==self.player.x and enemy.y==self.player.y:
+                            self.player.lives-= 1    #No se pq no funciona
+
 
                 if self.player.lives==0:
                     self.scene=3
 
                 if self.scene == 3:
-                    if pyxel.btnp(pyxel.KEY_Q):
-                        pyxel.quit()
+                    if pyxel.btnp(pyxel.KEY_SPACE):
+                        self.scene=1
+
 
 
 
@@ -91,18 +103,22 @@ class Board:
                 pyxel.text(80, self.height / 2, "Press L to start the game", pyxel.frame_count % 10)
 
             pyxel.text(10,10, "Actual Score:", 0)      #The actual score
-      # pyxel.text(10,20, self.puntuation, 3)
+            pyxel.text(10,20, str(self.puntuation), 0)
+
             pyxel.text(self.width/2, 10, "Highest Score:", 0)    #The highest score, that comes from a variable stored
-      #  pyxel.text(10, 10, self.highest_puntuation, 3)                                                   in the main
+            pyxel.text(self.width/2, 20, str(self.highest_puntuation), 10)
+
             pyxel.text(10, self.height-10, "Lives:", 0)    #The number of lives
+            pyxel.text(40, self.height - 10, str(self.player.lives), 0)
 
             self.clouds.draw()
 
             self.player.draw()
 
+            #self.bullets.draw()
+
             for enemy in self.list_enemy1:              #prints everu enemy1 that we stored in the enemy1 list
-                pyxel.blt(enemy.x,enemy.y, *enemy.image)    #positionx, positiony, (way of saying that it need to
-                # take every value in the image tuple as one alone)
+                enemy.draw()
 
         if self.scene == 3:
             """This draws the message of Game Over"""
