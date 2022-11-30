@@ -1,8 +1,10 @@
+"""
+Created by (Esteban Gómez) in  ${2022}
+"""
 import pyxel
 import random
 import time
 from player import Player
-from player import Bullets
 from enemies import Enemy1
 from background import Clouds
 
@@ -67,22 +69,23 @@ class Board:
                    self.clouds.update(self.width, self.height, -100)
 
                    for enemy in self.list_enemy1:       #Moves each enemy1
-                        enemy.update(self.width,self.height, -8)    # the height of the screen, the place of appearence
+                       if enemy.lives > 0:
+                            enemy.update(self.width,self.height, -8)    # the height of the screen, the place of appearence
 
-                        if self.player.x + self.player.image[3] > enemy.x and enemy.x + enemy.image[3] > \
-                                self.player.x and self.player.y + self.player.image[4] > enemy.y and enemy.y + \
-                                enemy.image[4] > self.player.y:
-                                    collision = True
-                                    self.end_time=time.time()
+                            if self.player.x + self.player.image[3] > enemy.x and enemy.x + enemy.image[3] > \
+                                    self.player.x and self.player.y + self.player.image[4] > enemy.y and enemy.y + \
+                                    enemy.image[4] > self.player.y:
+                                        collision = True
+                                        self.end_time=time.time()
 
-                                    if collision == True:
+                                        if collision == True:
 
-                                        if self.end_time - self.start_time > 2.0:
-                                            self.player.lives-= 1
-                                            enemy.lives-= 1
-                                            self.start_time=time.time()
+                                            if self.end_time - self.start_time > 2.0:
+                                                self.player.lives-= 1
+                                                enemy.lives-= 1
+                                                self.start_time=time.time()
 
-                        print(self.player.lives)
+
 
                 if self.player.lives <= 0:
                     self.scene=3
@@ -125,7 +128,8 @@ class Board:
             #self.bullets.draw()
 
             for enemy in self.list_enemy1:              #prints everu enemy1 that we stored in the enemy1 list
-                enemy.draw()
+                if enemy.lives>0:
+                    enemy.draw()
 
         if self.scene == 3:
             """This draws the message of Game Over"""
