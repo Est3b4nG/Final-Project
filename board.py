@@ -1,8 +1,6 @@
-"""
-Created by (Esteban Gómez) in  ${2022}
-"""
 import pyxel
 import random
+import time
 from player import Player
 from player import Bullets
 from enemies import Enemy1
@@ -45,6 +43,7 @@ class Board:
             enemy1 = Enemy1(appearence, -16)
             self.list_enemy1.append(enemy1)       #Append them to the list of enemy 1 that we created
 
+        self.start_time = time.time()
         #Runs the game, always ín the last part of the init
         pyxel.run(self.update,self.draw)
 
@@ -63,27 +62,34 @@ class Board:
             if self.start_game==True:
                 self.player.update(self.width, self.height)
 
-                if pyxel.btn(pyxel.KEY_K):
-                    self.bullets = Bullets(self.player.x, self.player.y)
-                    self.bullets.update()
-
-
                 if self.player.lives > 0: #If the player have more than 0 lives, it will make the enemies 1 move
 
                    self.clouds.update(self.width, self.height, -100)
 
                    for enemy in self.list_enemy1:       #Moves each enemy1
                         enemy.update(self.width,self.height, -8)    # the height of the screen, the place of appearence
-                        if enemy.x==self.player.x and enemy.y==self.player.y:
-                            self.player.lives-= 1    #No se pq no funciona
 
+                        if self.player.x + self.player.image[3] > enemy.x and enemy.x + enemy.image[3] > \
+                                self.player.x and self.player.y + self.player.image[4] > enemy.y and enemy.y + \
+                                enemy.image[4] > self.player.y:
+                                    collision = True
+                                    self.end_time=time.time()
 
-                if self.player.lives==0:
+                                    if collision == True:
+
+                                        if self.end_time - self.start_time > 2.0:
+                                            self.player.lives-= 1
+                                            enemy.lives-= 1
+                                            self.start_time=time.time()
+
+                        print(self.player.lives)
+
+                if self.player.lives <= 0:
                     self.scene=3
 
-                if self.scene == 3:
-                    if pyxel.btnp(pyxel.KEY_SPACE):
-                        self.scene=1
+        if self.scene == 3:
+            if pyxel.btnp(pyxel.KEY_SPACE):
+                self.scene = 1
 
 
 
@@ -114,6 +120,7 @@ class Board:
             self.clouds.draw()
 
             self.player.draw()
+
 
             #self.bullets.draw()
 
