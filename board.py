@@ -1,3 +1,6 @@
+"""
+Created by (Esteban Gómez) in  ${2022}
+"""
 import pyxel
 import random
 import time
@@ -6,6 +9,7 @@ from player import Bullets
 from enemies import Enemy1
 from enemies import Bombardier
 from background import Clouds
+from background import Background
 
 
 class Board:
@@ -21,6 +25,7 @@ class Board:
         self.puntuation= 0
         self.highest_puntuation=highest_puntuation
 
+
         #This initialize pyxel
         pyxel.init(self.width, self.height, title="1942")
 
@@ -32,10 +37,11 @@ class Board:
         self.player = Player(self.width / 2, self.height - 30 ,3)
 
      #   self.bullets= Bullets(self.player.x, self.player.y)
+        self.background= Background(0,0)
 
         self.clouds= Clouds(0, -50)
         self.start_time = time.time()
-
+        self.list_enemies=[]
         #Create the enemies 1, we are doing a list of these enemies, because we can have more than one at a time
         self.list_enemy1= []
         number_of_enemy1 = random.randint(1, 6)      #Number of enemy one at the same time
@@ -44,11 +50,13 @@ class Board:
             # The creation of each enemy1 in a random x and same height (-16)
             enemy1 = Enemy1(appearence, -16)
             self.list_enemy1.append(enemy1)       #Append them to the list of enemy 1 that we created
+        self.list_enemies.append(self.list_enemy1)
+
         self.list_bombardier=[]
-        if self.puntuation == 1500 or self.puntuation == 1600:
-            bombardier= Bombardier(self.width,self.height)
-            self.list_bombardier.append(bombardier)
-        
+ #       if self.puntuation==100 or self.puntuation==200:
+        bombardier= Bombardier(self.width,self.height)
+        self.list_bombardier.append(bombardier)
+        self.list_enemies.append(self.list_bombardier)
 
         self.start_time_collision = time.time()
         #Runs the game, always ín the last part of the init
@@ -64,6 +72,7 @@ class Board:
             if pyxel.btnp(pyxel.KEY_SPACE):
                 self.scene=2
         if self.scene == 2:
+            self.background.update()
             if pyxel.btnp(pyxel.KEY_L):    #If the person press space, the game starts
                 self.start_game=True           #Makes the game start
             if self.start_game==True:
@@ -71,11 +80,13 @@ class Board:
 
                 if self.player.lives > 0: #If the player have more than 0 lives, it will make the enemies 1 move
 
-                   self.clouds.update(self.width, self.height, -100)
+                    self.clouds.update(self.width, self.height, -100)
 
-                   for enemy in self.list_enemy1:       #Moves each enemy1
+
+                for enemies in self.list_enemies:
+                   for enemy in enemies:       #Moves each enemy1
                        if enemy.lives > 0:
-                            enemy.update(self.width,self.height, -8)    # the height of the screen, the place of appearence
+                            enemy.update(self.width,self.height)# the height of the screen, the place of appearence
 
                             if self.player.x + self.player.image[3] > enemy.x and enemy.x + enemy.image[3] > \
                                     self.player.x and self.player.y + self.player.image[4] > enemy.y and enemy.y + \
@@ -89,26 +100,6 @@ class Board:
                                                 self.player.lives-= 1
                                                 enemy.lives-= 1
                                                 self.start_time_collision=time.time()
-                            for enemy in self.list_enemy1:  # Moves each enemy1
-                                if enemy.lives > 0:
-                                    enemy.update(self.width, self.height,
-                                                 -8)  # the height of the screen, the place of appearence
-
-                                    if self.player.x + self.player.image[3] > enemy.x and enemy.x + enemy.image[3] > \
-                                            self.player.x and self.player.y + self.player.image[
-                                        4] > enemy.y and enemy.y + \
-                                            enemy.image[4] > self.player.y:
-                                        collision = True
-                                        self.end_time_collision = time.time()
-
-                                        if collision == True:
-
-                                            if self.end_time_collision - self.start_time_collision > 2.0:
-                                                self.player.lives -= 1
-                                                enemy.lives -= 1
-                                                self.start_time_collision = time.time()
-                       
-                        
 
                             for bullet in self.player.list_bullets:
                                 if (bullet.position_x > enemy.x and bullet.position_x < enemy.x + enemy.image[3]) and \
@@ -140,8 +131,8 @@ class Board:
             pyxel.text(self.width / 2 - 60, 245, "Universidad Carlos III, 2022", 4)
 
         if self.scene == 2:
-            pyxel.cls(5)     #Black background
-
+            pyxel.cls(5)
+            self.background.draw()
             if self.start_game==False:   #Only appear before the user press "space key"
                 pyxel.text(80, self.height / 2, "Press L to start the game", pyxel.frame_count % 10)
 
@@ -154,15 +145,16 @@ class Board:
             pyxel.text(10, self.height-10, "Lives:", 0)    #The number of lives
             pyxel.text(40, self.height - 10, str(self.player.lives), 0)
 
+
             self.clouds.draw()
 
             self.player.draw()
 
 
-            for enemy in self.list_enemy1:              #prints everu enemy1 that we stored in the enemy1 list
-              #  if enemy.lives>0:
-                enemy.draw()
-              #  if enemy.lives<=0:
+            for enemies in self.list_enemies:              #prints everu enemy1 that we stored in the enemy1 list
+                for enemy in enemies:
+                    enemy.draw()
+
 
 
         if self.scene == 3:
