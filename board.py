@@ -41,10 +41,11 @@ class Board:
 
         self.clouds= Clouds(0, -50)
         self.start_time = time.time()
+        self.end_time= time.time()
         self.list_enemies=[]
         #Create the enemies 1, we are doing a list of these enemies, because we can have more than one at a time
         self.list_enemy1= []
-        number_of_enemy1 = random.randint(1, 6)      #Number of enemy one at the same time
+        number_of_enemy1 = random.randint(1, 10)      #Number of enemy one at the same time
         for i in range(number_of_enemy1):       #Create the prevously calculated number of enemies 1
             appearence = random.randint(0, self.width)  #Plave in whcih they appear in x axis
             # The creation of each enemy1 in a random x and same height (-16)
@@ -61,6 +62,7 @@ class Board:
         self.start_time_collision = time.time()
         #Runs the game, always ín the last part of the init
         pyxel.run(self.update,self.draw)
+
 
 
     def update(self):
@@ -84,11 +86,10 @@ class Board:
 
 
                 for enemies in self.list_enemies:
-                   for enemy in enemies:       #Moves each enemy1
-                       if enemy.lives > 0:
-                            enemy.update(self.width,self.height)# the height of the screen, the place of appearence
-
-                            if self.player.x + self.player.image[3] > enemy.x and enemy.x + enemy.image[3] > \
+                    for enemy in enemies:       #Moves each enemy1
+                         if enemy.lives >= 0:
+                             enemy.update(self.width,self.height)    # the height of the screen, the place of appearence
+                             if self.player.x + self.player.image[3] > enemy.x and enemy.x + enemy.image[3] > \
                                     self.player.x and self.player.y + self.player.image[4] > enemy.y and enemy.y + \
                                     enemy.image[4] > self.player.y:
                                         collision = True
@@ -101,11 +102,18 @@ class Board:
                                                 enemy.lives-= 1
                                                 self.start_time_collision=time.time()
 
-                            for bullet in self.player.list_bullets:
-                                if (bullet.position_x > enemy.x and bullet.position_x < enemy.x + enemy.image[3]) and \
-                                        bullet.position_y > enemy.y and bullet.position_y < enemy.y + enemy.image[4]:
+                             for bullet in self.player.list_bullets:
+                                 if (bullet.position_x > enemy.x and bullet.position_x < enemy.x + enemy.image[3]) \
+                                        and bullet.position_y > enemy.y and bullet.position_y < enemy.y + enemy.image[4]:
                                     enemy.lives -= 1
-                                    self.puntuation+= 100
+                                    self.puntuation+= enemy.puntuation *100
+                self.end_time= time.time()
+
+                print (int(self.end_time - self.start_time))
+                if int(self.end_time - self.start_time) == 2:
+                    enemy1 = Enemy1(random.randint(0,self.width), -16)
+                    self.list_enemies[1].append(enemy1)
+                    self.start_time= self.end_time
 
 
 
@@ -113,8 +121,8 @@ class Board:
 
                 if self.player.lives <= 0:
                     self.scene=3
-        self.end_time= time.time()
-        self.end_time=self.start_time
+
+
         if self.scene == 3:
             if pyxel.btnp(pyxel.KEY_SPACE):
                 self.scene = 1
@@ -127,7 +135,7 @@ class Board:
         if self.scene == 1:
             pyxel.cls(0)
             pyxel.text(118, self.height / 2, "1942", pyxel.frame_count % 10)
-            pyxel.text(self.width / 2 - 60, self.height / 2 + 10, "Choose the number of lives", pyxel.frame_count % 10)
+            pyxel.text(self.width / 2 - 35, self.height / 2 + 10, "BE THE BEST PILOT", pyxel.frame_count % 10)
             pyxel.text(self.width / 2 - 60, 245, "Universidad Carlos III, 2022", 4)
 
         if self.scene == 2:
@@ -160,4 +168,4 @@ class Board:
         if self.scene == 3:
             """This draws the message of Game Over"""
             pyxel.cls(0)
-            pyxel.text(self.width / 2 -13, self.height / 2 + 10, "Game Over", pyxel.frame_count % 10)
+            pyxel.text(self.width / 2 - 17, self.height / 2 , "Game Over", pyxel.frame_count % 10)
