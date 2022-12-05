@@ -142,3 +142,4 @@ class Enemies_bullets:
         pyxel.blt(self.position_x + (self.image[3]), self.position_y + (self.image[4]), *self.image)
 
 
+
