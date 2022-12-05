@@ -7,7 +7,7 @@ import time
 from player import Player
 from player import Bullets
 from enemies import Enemy1
-from enemies import Bombardier
+from enemies import SuperBombardier
 from background import Clouds
 from background import Background
 
@@ -53,11 +53,11 @@ class Board:
             self.list_enemy1.append(enemy1)       #Append them to the list of enemy 1 that we created
         self.list_enemies.append(self.list_enemy1)
 
-        self.list_bombardier=[]
+        self.list_SuperBombardier=[]
  #       if self.puntuation==100 or self.puntuation==200:
-        bombardier= Bombardier(self.width,self.height)
-        self.list_bombardier.append(bombardier)
-        self.list_enemies.append(self.list_bombardier)
+        superbombardier= SuperBombardier(self.width,self.height)
+        self.list_SuperBombardier.append(superbombardier)
+        self.list_enemies.append(self.list_SuperBombardier)
 
         self.start_time_collision = time.time()
         #Runs the game, always ín the last part of the init
@@ -107,13 +107,14 @@ class Board:
                                         and bullet.position_y > enemy.y and bullet.position_y < enemy.y + enemy.image[4]:
                                     enemy.lives -= 1
                                     self.puntuation+= enemy.puntuation *100
-                self.end_time= time.time()
 
-                print (int(self.end_time - self.start_time))
+                self.end_time= time.time()
+         #       print (int(self.end_time - self.start_time))
                 if int(self.end_time - self.start_time) == 2:
                     enemy1 = Enemy1(random.randint(0,self.width), -16)
                     self.list_enemies[1].append(enemy1)
                     self.start_time= self.end_time
+
 
 
 
