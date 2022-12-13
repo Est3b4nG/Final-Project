@@ -13,8 +13,6 @@ class Enemy1:
         self.y= y    #position of enemy in y (originally, -12)
         self.lives=lives   #Declared here as 1
         self.direction = 1   #Direction, if it is going down or up (we give value=! to represent when it is going down )
-   #     self.last_x= -10
-  #      self.last_y = -10
         self.list_explosion = []
         #We are importing the image in the position 0,16 of the image bank 0, this image have diemnsion of 16x16 and
         # the colkey is black(0), we will use this vale in the board
@@ -33,7 +31,6 @@ class Enemy1:
              self.direction *= -1
         if self.y < -20:
             self.x= random.randint(0,width)
-
         if self.y >= height / 2:
             enemybullets = Enemies_bullets(self.x, self.y, self.image[3]/2, self.image[4])
             self.bullet_list.append(enemybullets)
@@ -43,33 +40,26 @@ class Enemy1:
             if self.bullet_list[i].position_y < 0 or self.lives <= 0:
                 del(self.bullet_list[i])
 
-
-
         if self.lives <= 0:
             self.puntuation = 1
-
-            last_x= self.x
-            last_y = self.y
-          #  print(last_x)
-
-            explosion= Explosion(100, 200, self.lives)
-            self.list_explosion.append(explosion)
+      #      explosion = Explosion(self.x, self.y)
+       #     self.list_explosion.append(explosion)
 
     def draw(self):
             if self.lives>0:
                 pyxel.blt(self.x, self.y, *self.image)
-           # if self.lives<=0:
-            #    for explosion in self.list_explosion:
-            #        explosion.draw()
             for bullet in self.bullet_list:
                 bullet.draw()
+            else:
+                for explosion in self.list_explosion:
+                    explosion.draw()
 
 
 class Enemy2:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.image = (1, 2, 210, 11, 20, 0)
+        self.image = (1, 1, 58, 11, 20, 0)
         self.lives = 3
         self.angle = 0
         self.change_angle = 7
@@ -113,7 +103,7 @@ class Bombardier:
         self.width = width
         self.height = height
         self.lives = 5
-        self.image = (1, 7, 181, 30, 23, 0)
+        self.image = (1, 0, 109, 40, 23, 0)
         self.x = width / 2
         self.y = -self.image[4]
         direction = (-1, 0, 1)
@@ -156,7 +146,7 @@ class SuperBombardier:
         self.width = width
         self.height = height
         self.lives = 100
-        self.image = (1, 7, 0, 62, 57, 0)
+        self.image = (1, 0, 0, 62, 57, 0)
         self.x = random.uniform(0, self.width / 4)
         self.y= height + self.image[4]
         self.puntuation = 0
@@ -199,13 +189,14 @@ class SuperBombardier:
             bullet.draw()
 
 class Explosion:
-    def __init__(self, position_x, position_y,lives):
+    def __init__(self, position_x, position_y):
         self.position_x = position_x
         self.position_y = position_y
-        self.lives=lives
-        self.image= [1, 0, 7, 22, 21, 0]
+        self.image= [1, 211, 216, 12, 12, 0]
+        self.end_collision= time.time()
     def draw(self):
-            pyxel.blt(self.position_x, self.position_y, *self.image)
+        if pyxel.frame_count == pyxel.frame_count:
+                pyxel.blt(self.position_x, self.position_y, *self.image)
 
 
 
