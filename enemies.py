@@ -1,6 +1,3 @@
-"""
-Created by (Esteban Gómez) in  ${2022}
-"""
 import pyxel
 import random
 import time
@@ -13,10 +10,9 @@ class Enemy1:
         self.y= y    #position of enemy in y (originally, -12)
         self.lives=lives   #Declared here as 1
         self.direction = 1   #Direction, if it is going down or up (we give value=! to represent when it is going down )
-        self.list_explosion = []
         #We are importing the image in the position 0,16 of the image bank 0, this image have diemnsion of 16x16 and
         # the colkey is black(0), we will use this vale in the board
-        self.image = (0, 224, 240, 16, 16, 0)
+        self.image = [0, 224, 240, 16, 16, 0]
         self.puntuation = 0
         self.bullet_list = []
 
@@ -29,6 +25,12 @@ class Enemy1:
             # screen the direction will become -1, so up in the general formula instead of adding to frames it will
             # start to subtract two frames (self.y + 2 * (-1) --> self.y - 2)
              self.direction *= -1
+        if self.direction==1:
+            self.image = [0, 224, 240, 16, 16, 0]
+        if self.direction == -1:
+            self.image = [1, 37, 70, 16, 16, 0]
+
+
         if self.y < -20:
             self.x= random.randint(0,width)
         if self.y >= height / 2:
@@ -42,17 +44,12 @@ class Enemy1:
 
         if self.lives <= 0:
             self.puntuation = 1
-      #      explosion = Explosion(self.x, self.y)
-       #     self.list_explosion.append(explosion)
 
     def draw(self):
             if self.lives>0:
                 pyxel.blt(self.x, self.y, *self.image)
             for bullet in self.bullet_list:
                 bullet.draw()
-            else:
-                for explosion in self.list_explosion:
-                    explosion.draw()
 
 
 class Enemy2:
@@ -60,7 +57,7 @@ class Enemy2:
         self.x = x
         self.y = y
         self.image = (1, 1, 58, 11, 20, 0)
-        self.lives = 3
+        self.lives = 1
         self.angle = 0
         self.change_angle = 7
         self.bullet_list=[]
@@ -93,7 +90,8 @@ class Enemy2:
 
 
     def draw(self):
-        pyxel.blt(self.x, self.y, *self.image)
+        if self.lives>0:
+            pyxel.blt(self.x, self.y, *self.image)
         for bullet in self.bullet_list:
             bullet.draw()
 
@@ -134,6 +132,8 @@ class Bombardier:
         else:
             self.x += 2
 
+        if self.lives <= 0:
+            self.puntuation = 5
 
     def draw(self):
         if self.lives > 0:
@@ -145,8 +145,8 @@ class SuperBombardier:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.lives = 100
-        self.image = (1, 0, 0, 62, 57, 0)
+        self.lives = 20
+        self.image = (1, 0, 0, 70, 57, 0)
         self.x = random.uniform(0, self.width / 4)
         self.y= height + self.image[4]
         self.puntuation = 0
@@ -161,7 +161,7 @@ class SuperBombardier:
             self.x += 0.25
             self.y -= 1
         if self.lives<=0:
-            self.puntuation = 5
+            self.puntuation = 10
 
         self.time_shot_end = time.time()
 
@@ -173,7 +173,6 @@ class SuperBombardier:
 
         if self.time_shot_end==6:
             self.time_shot_start = 0
-
 
         for i in range(len(self.bullet_list) - 1, -1, -1):
             self.bullet_list[i].update(4)
@@ -192,11 +191,11 @@ class Explosion:
     def __init__(self, position_x, position_y):
         self.position_x = position_x
         self.position_y = position_y
-        self.image= [1, 211, 216, 12, 12, 0]
-        self.end_collision= time.time()
+        self.image= [1, 41, 179, 12, 12, 0]
+        self.frame_start=pyxel.frame_count
     def draw(self):
-        if pyxel.frame_count == pyxel.frame_count:
-                pyxel.blt(self.position_x, self.position_y, *self.image)
+        if pyxel.frame_count-self.frame_start < 12:
+            pyxel.blt(self.position_x, self.position_y, *self.image)
 
 
 
@@ -227,4 +226,6 @@ class Enemies_bullets:
 
     def draw(self):
         pyxel.blt(self.position_x + (self.image[3]), self.position_y + (self.image[4]), *self.image)
+
+
 
