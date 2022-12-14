@@ -16,15 +16,20 @@ class Player:
         # black. We are going to use this image in the board to draw the players plane, we are only missing the
         # values of the position of the screen that were going to bring in the board.
         self.image = [0, 208, 240, 16, 16, 0]
-        #print(self.image[3])
-        #print(self.image[4])
+        self.aux = 0
+        self.loop = False
+        self.loop_image = [[1, 1, 239, 32, 16, 0], [1, 32, 240, 32, 16, 0],
+                           [1, 62, 238, 32, 16, 0], [1, 90, 238, 30, 16, 0],
+                           [1, 122, 237, 32, 16, 0], [1, 151, 237, 32, 16, 0],
+                           [1, 182, 242, 32, 16, 0], [1, 211, 238, 32, 24, 0], [0, 208, 240, 16, 16, 0]]
+        self.number_loops = 3
 
         #You introduce the number of lives
     def update(self, width, height):
-
+        """This method will move the plane"""
         plane_x_size = abs(self.image[3])
         plane_y_size = abs(self.image[4])
-        """This method will move the plane"""
+
     # direction is determined by the key they pressed (coded in the board), range is the height or width of the
     # screen (depending on if you're moving in the x-axis or y-axis) this value is also given in the board.
         #if the position is smaller than the range (width) - the plane dimension in x-axis (if we don't do this,
@@ -54,15 +59,24 @@ class Player:
             if self.list_bullets[i].position_y < 0:
                 del(self.list_bullets[i])
 
+        if pyxel.btn(pyxel.KEY_Z) and self.number_loops > 0:
+            self.loop = True
 
+        if self.loop:
+            self.image = self.loop_image[self.aux]
+            if pyxel.frame_count % 4 == 0:
+                self.aux += 1
+            if self.aux == 9:
+                self.loop = False
+                self.aux = 0
+                self.number_loops -= 1
 
     def draw(self):
         offset= pyxel.frame_count
         if offset % 2== 0:
-            self.image[3]= self.image[3] * -1
+            self.image [3]= self.image[3] * -1
 
         pyxel.blt(self.x, self.y, *self.image)  # prints the image of the player
-
 
         for bullet in self.list_bullets:
             bullet.draw()
@@ -71,7 +85,7 @@ class Player:
 class Bullets:
     """These are the bullets of the player"""
     def __init__(self, position_x, position_y):
-        self.position_x = position_x + 5
+        self.position_x = position_x + 3
         self.position_y = position_y
 
         self.image=(0, 240, 240, 10, 5, 0)
